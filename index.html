@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ua">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Налаштування ПІД-регулятора</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
+    integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"
+    integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz"
+    crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+    integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+</head>
+
+<body>
+  <header class="header">
+    <img src="https://pbs.twimg.com/profile_images/967054878903332864/_D72Bty5.jpg" alt="KPIlogo" class="header__logo">
+
+    <div class="header__text">
+      <span class="header__title">Кафедра кібернетики хіміко-технологічних процесів</span>
+      <span class="header__title">Хіміко-технологічний факультет</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <h2 class="main__title">Розрахунок оптимальних параметрів ПІД-регулятора</h2>
+
+    <section class="init">
+      <h3 class="init__title">Вхідні дані до розрахунку:</h3>
+
+      <form class="init-form" name="initForm">
+        <fieldset class="init-form__block">
+          <label for="k">k = </label>
+          <input type="number" class="init-form__input" id="k" step="any" placeholder="Коефіцієнт підсилення k"
+            required>
+          <br>
+
+          <label for="T">T = </label>
+          <input type="number" class="init-form__input" id="T" step="any" placeholder="Постійна часу Т, хв" required>
+          <br>
+
+          <label for="tau">&#964; = </label>
+          <input type="number" class="init-form__input" id="tau" step="any" placeholder="Час запізнення &#964;, хв"
+            required>
+          <br>
+
+          <label for="M">M = </label>
+          <input type="number" class="init-form__input" id="M" step="any" placeholder="Показник коливальності М"
+            required>
+        </fieldset>
+
+        <fieldset class="init-form__block">
+          <label for="Ti1">T<sub>i</sub>1 = </label>
+          <input type="number" class="init-form__input" id="Ti1" step="any" placeholder="Стала часу Ti1, хв" required>
+          <br>
+
+          <label for="Ti2">T<sub>i</sub>2 = </label>
+          <input type="number" class="init-form__input" id="Ti2" step="any" placeholder="Стала часу Ti2, хв" required>
+          <br>
+
+          <label for="Ti3">T<sub>i</sub>3 = </label>
+          <input type="number" class="init-form__input" id="Ti3" step="any" placeholder="Стала часу Ti3, хв" required>
+          <br>
+
+          <label for="Ti4">T<sub>i</sub>4 = </label>
+          <input type="number" class="init-form__input" id="Ti4" step="any" placeholder="Стала часу Ti4, хв" required>
+        </fieldset>
+
+        <fieldset class="init-form__controls">
+          <button class="button" type="reset">Очистити</button>
+          <button class="button" name="example" type="button">Приклад</button>
+          <button class="button" name="calc" type="submit">Розрахувати</button>
+        </fieldset>
+      </form>
+    </section>
+
+    <section class="charts hidden">
+      <div class="charts__item">
+        <button class="button charts__btn">Скинути масштабування</button>
+        <canvas id="chart1"></canvas>
+      </div>
+
+      <div class="charts__item">
+        <button class="button charts__btn">Скинути масштабування</button>
+        <canvas id="chart2"></canvas>
+      </div>
+
+      <div class="charts__item">
+        <button class="button charts__btn">Скинути масштабування</button>
+        <canvas id="chart3"></canvas>
+      </div>
+
+      <div class="charts__item">
+        <button class="button charts__btn">Скинути масштабування</button>
+        <canvas id="chart4"></canvas>
+      </div>
+    </section>
+
+    <section class="optimal hidden">
+      <h2 class="optimal__title">Результати розрахунку параметрів ПІД-регулятора</h2>
+
+      <div class="optimal__border">
+        <p class="optimal__text" id="pFactor"></p>
+        <p class="optimal__text" id="iFactor"></p>
+        <p class="optimal__text" id="dFactor"></p>
+      </div>
+
+      <div class="optimal__border">
+        <p class="optimal__text">Передавальна функція об'єкта:</p>
+        <div class="optimal__func" id="object_func"></div>
+
+        <p class="optimal__text">Передавальна функція регулятора з оптимальними параметрами:</p>
+        <div class="optimal__func" id="regulator_func"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer__text">
+      <span>Дипломний проект: "Комп'ютерний розрахунок та автоматизація процесу отримання циклогексанону"</span>
+      <span>Виконав: Кіцун А.В., ХА-61</span>
+      <span>Керівник: к.т.н., доц. Шахновський А.М.</span>
+    </div>
+  </footer>
+
+  <script src="./js/form.js"></script>
+  <script src="./js/calc.js"></script>
+  <script src="./js/complex.js"></script>
+  <script src="./js/chart.js"></script>
+  <script src="./js/formulas.js"></script>
+</body>
+
+</html>
